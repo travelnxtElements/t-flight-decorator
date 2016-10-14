@@ -1,0 +1,134 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../t-behavior/t-decorator-behavior.html">
+
+<!--
+    <h3>Details:</h3>
+
+        `t-flight-passenger-decorator` is a decorator component which translates `passengerTypesInfo` of activity option into `passengerInfo` property of `t-passenger-info-page`.
+
+    <h3>Input Property Format:</h3>
+
+        var input = 2
+
+        var passengerTypesInfo = [{o
+            "fare": null,
+            "maxAge":99,
+            "minAge":13,
+            "minQuantity":1,
+            "maxQuantity":9,
+            "passengerType":"Adult",
+            "step":1,
+            "isStepSpecified":false,
+            "quantity":2,
+            "displayPassengerType":"Adult",
+            "singlePassengerType":"Adult",
+            "multiplePassengerType":"Adults"
+        }];
+
+    <h3>Example:</h3>
+
+        <t-flight-passenger-decorator
+            input="[[input]]"
+            output="{{output}}"
+            passenger-types-info="[[passengerTypesInfo]]"
+            on-output-changed="_outputChanged"
+        </t-flight-passenger-decorator>
+
+    @demo demo/index.html
+-->
+
+<dom-module id="t-flight-passenger-decorator">
+
+    <template></template>
+
+    <script>
+
+        (function () {
+
+            'use strict'
+
+            Polymer({
+
+                is: 't-flight-passenger-decorator',
+
+                behaviors: [
+                    TravelNxt.Behaviors.DecoratorBehavior
+                ],
+
+                properties: {
+
+                    /**
+                     * This is the reference object for creating passenger list.
+                    */
+                    passenger: {
+                        type: Object,
+                        value: function () {
+                            return {
+                                title: '',
+                                firstName: '',
+                                middleName: '',
+                                lastName: '',
+                                suffix: '',
+                                dob: ''
+                            };
+                        },
+                        readOnly: true
+                    },
+
+                    passengerTypes: {
+                        type: Array,
+                        value: ['Adult', 'Senior', 'Child', 'Infant']
+                    },
+
+                    /**
+                     * This is the passenger information for the count (input property) specified.
+                    */
+                    searchData: {
+                        type: Object
+                    }
+
+                },
+
+                /**
+                 * This is the observer function for `input` property.
+                 * It overrides behavior method.
+                 */
+                __decorate: function () {
+
+                    if (!this.input) {
+                        return;
+                    }
+
+                    this._setOutput({
+                        passengerList: this._getPassengerData(),
+                        phone: '',
+                        email:''
+                    });
+                },
+
+                /*
+                 * Builds data for all passengers
+                */
+                _getPassengerData: function () {
+
+                    var passengerList = [];
+                    var _self = this;
+
+                    this.passengerTypes.forEach(function (displayPaxType) {
+                        var paxType = displayPaxType.toLowerCase();
+                        if (_self.input[paxType] && _self.input[paxType] > 0) {
+                            for (var i = 1; i <= _self.input[paxType]; i++) {
+                                var newPassenger = Object.assign({}, _self.passenger);
+                                newPassenger.type = paxType;
+                                newPassenger.header = displayPaxType + ' ' + i;
+                                passengerList.push(newPassenger);
+                            }
+                        }
+                    });
+
+                    return passengerList;
+                },
+            });
+        })()
+    </script>
+</dom-module>
